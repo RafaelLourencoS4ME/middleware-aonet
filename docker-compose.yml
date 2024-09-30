@@ -1,0 +1,13 @@
+version: '3.9'
+
+services:
+  middleware:
+    container_name: middleware
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:3000"
+    volumes:
+      - .:/usr/src/middleware
+      - C:\Users\thars\Downloads\logs:/usr/src/middleware/logs
