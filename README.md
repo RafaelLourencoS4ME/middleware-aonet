@@ -109,7 +109,7 @@ Este projeto está licenciado sob a Licença MIT. Consulte o arquivo [LICENSE](L
 ## Developers
 
 # Autores
-[<img src="https://avatars.githubusercontent.com/u/176444600?v=4" width=115><br><sub>Tharsys Santos</sub>](https://github.com/TharsysSolve4me)
+[<img src="https://avatars.githubusercontent.com/u/176444600?v=4" width=115><br><sub>Tharsys Santos</sub>](https://github.com/TharsysSolve4me) | :---: | :---: | :---: |
 [<img src="https://avatars.githubusercontent.com/u/183089609?v=4" width=115><br><sub>Joao Palazzolli</sub>](https://github.com/JoaoPalazzolli-solve4me)
 | :---: | :---: | :---: |
 
