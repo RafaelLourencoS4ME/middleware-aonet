@@ -13,8 +13,8 @@ function ajustarDados(){
     app.get('/ajustar-dados', async (req, res) => {
         return middlewareService.ajustarDados(req, res);
     });
-    
-    app.listen(loadEnvironments.port, () => {
-        Logger.info(`Middleware rodando na porta ${loadEnvironments.port}`);
+
+    app.listen(3000, '0.0.0.0', () => {
+        Logger.info('Aplicação rodando na porta 3000');
     });
 }

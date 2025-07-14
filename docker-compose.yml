@@ -6,8 +6,61 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    ports:
-      - "80:3000"
+    restart: always
     volumes:
       - .:/usr/src/middleware
-      - C:\Users\thars\Downloads\logs:/usr/src/middleware/logs
+      - ~/logs:/usr/src/middleware/logs
+    labels:
+      - "traefik.enable=true"
+
+      # HTTP router with redirection to HTTPS
+      - "traefik.http.routers.middleware-http.rule=Host(`sfr-api4me.devop4me.com`) && PathPrefix(`/ajustar-dados`)"
+      - "traefik.http.routers.middleware-http.entrypoints=http"
+      - "traefik.http.routers.middleware-http.middlewares=redirect-to-https"
+
+      # Middleware for redirecting to HTTPS
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+
+      # HTTPS router with TLS
+      - "traefik.http.routers.middleware-https.rule=Host(`sfr-api4me.devop4me.com`) && PathPrefix(`/ajustar-dados`)"
+      - "traefik.http.routers.middleware-https.entrypoints=https"
+      - "traefik.http.routers.middleware-https.tls.certresolver=myresolver"
+
+      # Service configuration
+      - "traefik.http.services.middleware-http.loadbalancer.server.port=3000"
+    networks:
+      - net-middleware
+
+  traefik:
+    container_name: traefik
+    image: traefik:v2.5
+    restart: always
+    command:
+      - "--api.insecure=true"
+      - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--entrypoints.http.address=:80"
+      - "--entrypoints.https.address=:443"
+      - "--log.level=DEBUG"
+      - "--log.filePath=/var/log/traefik.log"
+      - "--accesslog.filePath=/var/log/access.log"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=http"
+      - "--certificatesresolvers.myresolver.acme.email=seu-email@exemplo.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./logs:/var/log
+      - ./letsencrypt:/letsencrypt
+    networks:
+      - net-middleware
+
+networks:
+  net-middleware:
+    driver: bridge
