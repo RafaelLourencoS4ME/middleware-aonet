@@ -4,8 +4,11 @@ module.exports = {
   port: process.env.PORT || 3000,
   tokenUrl: process.env.AUTH_URL_LOGIN,
   authCredentials: {
-    username: process.env.AUTH_CREDENTIALS_USERNAME,
-    password: process.env.AUTH_CREDENTIALS_PASSWORD
+    client_id: process.env.AUTH_CREDENTIALS_USERNAME,
+    client_secret: process.env.AUTH_CREDENTIALS_PASSWORD,
+    syndata: process.env.SYNDATA,
+    scope: process.env.SCOPE,
+    grant_type: process.env.GRANT_TYPE
   },
   logger: {
     level: 'info',

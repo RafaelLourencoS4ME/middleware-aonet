@@ -10,11 +10,14 @@ services:
     volumes:
       - .:/usr/src/middleware
       - ~/logs:/usr/src/middleware/logs
+    env_file:
+      - ".env"
+
     labels:
       - "traefik.enable=true"
 
       # HTTP router with redirection to HTTPS
-      - "traefik.http.routers.middleware-http.rule=Host(`sfr-api4me.devop4me.com`) && PathPrefix(`/ajustar-dados`)"
+      - "traefik.http.routers.middleware-http.rule=Host(`aonet-api4me.devop4me.com`) && PathPrefix(`/ajustar-dados`)"
       - "traefik.http.routers.middleware-http.entrypoints=http"
       - "traefik.http.routers.middleware-http.middlewares=redirect-to-https"
 
@@ -22,9 +25,19 @@ services:
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
 
       # HTTPS router with TLS
-      - "traefik.http.routers.middleware-https.rule=Host(`sfr-api4me.devop4me.com`) && PathPrefix(`/ajustar-dados`)"
+      - "traefik.http.routers.middleware-https.rule=Host(`aonet-api4me.devop4me.com`) && PathPrefix(`/ajustar-dados`)"
       - "traefik.http.routers.middleware-https.entrypoints=https"
       - "traefik.http.routers.middleware-https.tls.certresolver=myresolver"
+
+      # delete for prod?
+      # router for localhost http
+      # - "traefik.http.routers.middleware-localhost-http.rule=Host(`localhost`) && PathPrefix(`/ajustar-dados`)"
+      # - "traefik.http.routers.middleware-localhost-http.entrypoints=http"
+      # - "traefik.http.routers.middleware-localhost-http.middlewares=redirect-to-https"
+      # # HTTPS router for localhost
+      # - "traefik.http.routers.middleware-localhost-https.rule=Host(`localhost`) && PathPrefix(`/ajustar-dados`)"
+      # - "traefik.http.routers.middleware-localhost-https.entrypoints=https"
+      # - "traefik.http.routers.middleware-localhost-https.tls.certresolver=myresolver"
 
       # Service configuration
       - "traefik.http.services.middleware-http.loadbalancer.server.port=3000"

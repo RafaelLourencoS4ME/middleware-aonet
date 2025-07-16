@@ -7,9 +7,11 @@ const authAPI = require('../infra/proxys/services/authAPI');
 const requestAPI = require('../infra/proxys/services/requestAPI');
 const { Logger } = require('../utils/logger');
 
-async function ajustarDados(req, res) {
+async function ajustarDados(req, res, verb) {
   try {
-    const url = req.query.host;
+    const {host: url, ...params} = req.query;
+    const body = req.body;
+    const extraHeaders = req.headers["authorization-token"]? {"Authorization-Token": req.headers["authorization-token"]} : {};
     let respostaAPI;
     let dto;
 
@@ -17,8 +19,12 @@ async function ajustarDados(req, res) {
     let token = await authAPI.obterTokenValido();
 
     try {
-      Logger.info(`Fazendo requisição para URL: ${url}`);
-      respostaAPI = await requestAPI.getData(url, token);
+      Logger.info(`Fazendo requisição ${verb} para URL: ${url}`);
+      if(verb == "get"){
+        respostaAPI = await requestAPI.getData(url, token, params);
+      } else {
+        respostaAPI = await requestAPI.postData(url, token, extraHeaders, body);
+      }
       Logger.info('Resposta da API recebida com sucesso.');
     } catch (error) {
       Logger.error('Erro na chamada à API: ' + (error.response ? error.response.data : error.message));
@@ -46,14 +52,20 @@ async function ajustarDados(req, res) {
       }
     }
 
-    if (!respostaAPI.data || !Array.isArray(respostaAPI.data) || respostaAPI.data.length === 0) {
+    if (!respostaAPI.data || Object.keys(respostaAPI.data).length === 0) {
       Logger.warn('Nenhum dado encontrado.');
       return res.status(404).json({ erro: 'Nenhum dado encontrado.' });
     }
 
     // Processa os dados recebidos
-    dto = concatenarUtil.dadosAninhados(respostaAPI.data);
-
+    if(Array.isArray(respostaAPI.data)){
+      Logger.warn('Dados começam com array.');
+      dto = concatenarUtil.dadosAninhados(respostaAPI.data);
+    }else{
+      Logger.warn('Dados começam com objeto.');
+      dto = concatenarUtil.dadosAninhadosObject(respostaAPI.data);
+    }
+    
     return res.json(dto);
   } catch (error) {
     Logger.error('Erro ao buscar e ajustar dados: ' + error.message);

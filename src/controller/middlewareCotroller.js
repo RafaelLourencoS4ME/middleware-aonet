@@ -11,7 +11,11 @@ function ajustarDados(){
     app.use(bodyParser.json());
 
     app.get('/ajustar-dados', async (req, res) => {
-        return middlewareService.ajustarDados(req, res);
+        return middlewareService.ajustarDados(req, res, "get");
+    });
+    
+    app.post('/ajustar-dados', async (req, res) => {
+        return middlewareService.ajustarDados(req, res, "post");
     });
 
     app.listen(3000, '0.0.0.0', () => {

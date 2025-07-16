@@ -16,20 +16,20 @@ async function obterNovoToken() {
     Logger.info('Solicitando novo token...');
     const resposta = await axios.post(loadEnvironments.tokenUrl, loadEnvironments.authCredentials, {
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
     });
 
-    const novoToken = resposta.data.token;
-    const expirationTime = Date.now() + 3600 * 1000; // Supondo que o token expire em 1 hora
+    const novoToken = resposta.data.access_token;
+    const expirationTime = Date.now() + resposta.data.expires_in * 1000;
 
     tokenCache.token = novoToken;
     tokenCache.expiration = expirationTime;
 
-    Logger.info('Novo token obtido com sucesso:', novoToken);
+    Logger.info('Novo token obtido com sucesso:' + novoToken);
     return novoToken;
   } catch (error) {
-    Logger.error('Erro ao obter novo token: ' + (error.response ? error.response.data : error.message));
+    Logger.error('Erro ao obter novo token: ' + (error.response ? JSON.stringify(error.response.data) : error.message));
     throw new Error('Não foi possível obter um novo token.');
   }
 }
