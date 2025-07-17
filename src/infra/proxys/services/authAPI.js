@@ -1,4 +1,4 @@
-module.exports = { verificarETentarObterNovoToken, obterNovoToken, obterTokenValido };
+module.exports = { verificarETentarObterNovoToken, obterNovoToken, obterTokenValido, obterTokenAonetwork };
 
 const axios = require('axios');
 const { Logger } = require('../../../utils/logger');
@@ -43,6 +43,10 @@ async function obterTokenValido() {
 
   Logger.info('Token válido encontrado no cache.');
   return tokenCache.token;
+}
+
+function obterTokenAonetwork(){
+  return loadEnvironments.tokenAonetwork
 }
 
 // Verificação de Token Expirado ou Inválido

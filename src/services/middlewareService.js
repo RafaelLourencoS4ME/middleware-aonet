@@ -16,21 +16,25 @@ async function ajustarDados(req, res, verb) {
     let dto;
 
     // Obtém o token válido antes da requisição
-    let token = await authAPI.obterTokenValido();
+    let token = "";
+    if(url.startsWith("https://aonetwork.aonet.com.br")){
+      token = authAPI.obterTokenAonetwork();
+    }else{
+      token = await authAPI.obterTokenValido();
+    }
 
     try {
       Logger.info(`Fazendo requisição ${verb} para URL: ${url}`);
       if(verb == "get"){
-        respostaAPI = await requestAPI.getData(url, token, params);
+        respostaAPI = await requestAPI.getData(url, token, extraHeaders, params);
       } else {
         respostaAPI = await requestAPI.postData(url, token, extraHeaders, body);
       }
       Logger.info('Resposta da API recebida com sucesso.');
     } catch (error) {
-      Logger.error('Erro na chamada à API: ' + (error.response ? error.response.data : error.message));
+      Logger.error('Erro na chamada à API: ' + (error.response ? JSON.stringify(error.response.data) : error.message));
 
-      // Se a API retornar 401, significa que o token, apesar de ainda
-      // não estar “formalmente” expirado, não é mais válido para a API
+      // Se a API retornar 401, significa que o token, apesar de ainda não estar “formalmente” expirado, não é mais válido para a API
       if (error.response && error.response.status === 401) {
         Logger.warn('Token possivelmente expirado ou inválido. Tentando obter um novo token...');
 

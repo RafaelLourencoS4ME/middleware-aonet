@@ -2,9 +2,10 @@ module.exports = { getData, postData }
 
 const axios = require('axios');
 
-async function getData(url, token, params){
+async function getData(url, token, extraHeaders, params){
     let config = {
         headers: {
+          ...extraHeaders,
           'Authorization': `Bearer ${token}`,
           'Content-Type': "application/json"
         },
@@ -13,10 +14,10 @@ async function getData(url, token, params){
     return await axios.get(url, config);
   }
   
-async function postData(url, token, headers, body = {}){
+async function postData(url, token, extraHeaders, body = {}){
     let config = {
         headers: {
-          ...headers,
+          ...extraHeaders,
           Authorization: `Bearer ${token}`,
           'Content-Type': "application/json"
         }
